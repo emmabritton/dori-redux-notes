@@ -1,0 +1,22 @@
+buildscript {
+    ext {
+        retrofitVer = "2.9.0"
+        moshiVer = "1.14.0"
+        okhttpVer = "4.10.0"
+        koinVer= "3.2.2"
+        koinAndroidVer= "3.3.0"
+        composeVer = '1.3.1'
+        junitVer = '4.13.2'
+
+        compileVer = 33
+        minVer = 30
+        targetVer = 33
+    }
+}
+
+plugins {
+    id 'com.android.application' version '7.3.1' apply false
+    id 'com.android.library' version '7.3.1' apply false
+    id 'org.jetbrains.kotlin.android' version '1.7.20' apply false
+    id 'org.jetbrains.kotlin.jvm' version '1.7.20' apply false
+}
