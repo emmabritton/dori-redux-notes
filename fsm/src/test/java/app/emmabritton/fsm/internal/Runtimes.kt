@@ -20,9 +20,9 @@ fun <S> createImmediateRuntime(
 fun <S> createThreadedRuntime(
     reduce: (Action, S) -> Effect<S>,
     initState: S
-): Triple<RuntimeKernel<S, S>, SingleThreadExecutorMarshaller, SingleThreadExecutorCommandHandler> {
+): Triple<RuntimeKernel<S, S>, SingleThreadExecutorMarshaller, FixedThreadPoolExecutorCommandHandler> {
     val marshaller = SingleThreadExecutorMarshaller()
-    val handler = SingleThreadExecutorCommandHandler()
+    val handler = FixedThreadPoolExecutorCommandHandler()
     val runtime = createCustomRuntime(reduce, initState, marshaller, handler, PassThoughTransform())
     return Triple(runtime, marshaller, handler)
 }
