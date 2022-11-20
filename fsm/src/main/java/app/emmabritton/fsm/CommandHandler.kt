@@ -13,6 +13,7 @@ interface CommandHandler {
     fun add(command: Command)
 
     fun cancel(commandId: String)
+    fun cancel(commandClass: Class<out Command>)
 }
 
 /**
@@ -34,7 +35,11 @@ class ImmediateCommandHandler : CommandHandler {
     }
 
     override fun cancel(commandId: String) {
-        //Does nothing
+        throw NotImplementedError("ImmediateCommandHandler doesn't support cancelling")
+    }
+
+    override fun cancel(commandClass: Class<out Command>) {
+        throw NotImplementedError("ImmediateCommandHandler doesn't support cancelling")
     }
 }
 
@@ -68,17 +73,24 @@ class FixedThreadPoolExecutorCommandHandler(count: Int = 1) : CommandHandler {
     }
 
     override fun cancel(commandId: String) {
+        cancel { it.command.id() == commandId }
+    }
+
+    override fun cancel(commandClass: Class<out Command>) {
+        cancel { it.command.javaClass == commandClass }
+    }
+
+    private fun cancel(predicate: (CommandJob) -> Boolean) {
         synchronized(executor) {
             commandFutures.removeAll { it.future.isDone }
-            commandFutures.filter { it.commandId == commandId }
+            commandFutures.filter(predicate)
                 .forEach { it.command.cancel() }
-            commandFutures.removeAll { it.commandId == commandId }
+            commandFutures.removeAll(predicate)
         }
     }
 
     private inner class CommandJob(
         val future: Future<*>,
-        val command: Command,
-        val commandId: String = command.id()
+        val command: Command
     )
 }

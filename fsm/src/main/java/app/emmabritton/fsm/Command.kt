@@ -45,7 +45,7 @@ abstract class BaseCommand : Command {
 
     override fun id() = "${javaClass.simpleName}#$id"
 
-    override fun run(actionReceiver: ActionReceiver) {
+    final override fun run(actionReceiver: ActionReceiver) {
         if (isCancelled()) {
             logger.d("Ignoring run() for ${id()} as it's been cancelled")
         } else {
@@ -57,7 +57,7 @@ abstract class BaseCommand : Command {
         cancelled = true
     }
 
-    override fun isCancelled() = cancelled
+    final override fun isCancelled() = cancelled
 
     private inner class CancellableActionReceiver(private val receiver: ActionReceiver) :
         ActionReceiver {

@@ -53,13 +53,15 @@ class RuntimeKernel<F : ForegroundState, S : State<F>, U : UiState>(
 
     override fun receive(action: Action) {
         synchronized(stateChangeLock) {
-            val effect = reduceAction(action)
+            marshaller.run {
+                val effect = reduceAction(action)
 
-            cancelForegroundCommands()
-            state = effect.newState
-            submitNewCommands(effect)
+                cancelForegroundCommands()
+                state = effect.newState
+                submitNewCommands(effect)
 
-            present()
+                present()
+            }
         }
     }
 
@@ -80,18 +82,16 @@ class RuntimeKernel<F : ForegroundState, S : State<F>, U : UiState>(
     }
 
     private fun present() {
-        marshaller.run {
-            val uiState = presentation.transform(state)
-            logger.d("Transformed $state to $uiState")
-            val processedUiState = middlewares.fold(uiState) { uiStt, ware ->
-                ware.onStateTransformed(
-                    state,
-                    uiStt
-                )
-            }
-            logger.d("Processed to $processedUiState")
-            render(processedUiState)
+        val uiState = presentation.transform(state)
+        logger.d("Transformed $state to $uiState")
+        val processedUiState = middlewares.fold(uiState) { uiStt, ware ->
+            ware.onStateTransformed(
+                state,
+                uiStt
+            )
         }
+        logger.d("Processed to $processedUiState")
+        render(processedUiState)
     }
 
     private fun cancelForegroundCommands() {
@@ -130,6 +130,16 @@ class RuntimeKernel<F : ForegroundState, S : State<F>, U : UiState>(
             commandHandler.cancel(id)
         } else {
             logger.d("Keeping $id alive")
+        }
+    }
+
+    fun <C : Command> cancelCommands(commandClass: Class<C>) {
+        val cancel = middlewares.all { it.onCommandCancelled(false, commandClass) }
+        if (cancel) {
+            logger.d("Cancelling $commandClass")
+            commandHandler.cancel(commandClass)
+        } else {
+            logger.d("Keeping $commandClass alive")
         }
     }
 

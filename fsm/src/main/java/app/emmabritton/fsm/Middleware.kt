@@ -32,6 +32,16 @@ interface Middleware<F : ForegroundState, S : State<F>, U : UiState> {
      * In [RuntimeKernel] if any middleware returns false then the command will be left alive
      */
     fun onCommandCancelled(wasAutomaticallyCancelled: Boolean, id: CommandId) = true
+
+    /**
+     * Called was all commands of a certain type are cancelled
+     *
+     * In [RuntimeKernel] if any middleware returns false then the commands will be left alive
+     */
+    fun <C : Command> onCommandCancelled(
+        wasAutomaticallyCancelled: Boolean,
+        commandClass: Class<C>
+    ) = true
 }
 
 /**
@@ -47,6 +57,13 @@ abstract class ReadOnlyMiddleware<F : ForegroundState, S : State<F>, U : UiState
         wasAutomaticallyCancelled: Boolean,
         id: CommandId
     ) {
+    }
+
+    protected open fun <C : Command> internalOnCommandCancelled(
+        wasAutomaticallyCancelled: Boolean,
+        commandClass: Class<C>
+    ): Boolean {
+        return super.onCommandCancelled(wasAutomaticallyCancelled, commandClass)
     }
 
     final override fun onActionReceived(action: Action): Action {
@@ -79,5 +96,12 @@ abstract class ReadOnlyMiddleware<F : ForegroundState, S : State<F>, U : UiState
     ): Boolean {
         internalOnCommandCancelled(wasAutomaticallyCancelled, id)
         return true
+    }
+
+    final override fun <C : Command> onCommandCancelled(
+        wasAutomaticallyCancelled: Boolean,
+        commandClass: Class<C>
+    ): Boolean {
+        return super.onCommandCancelled(wasAutomaticallyCancelled, commandClass)
     }
 }

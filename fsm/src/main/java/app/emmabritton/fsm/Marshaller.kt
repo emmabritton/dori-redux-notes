@@ -23,6 +23,9 @@ class ImmediateMarshaller : Marshaller {
 
 /**
  * Queues method to be executed on a single worker thread
+ *
+ * This marshaller has no exception handling and so any exceptions thrown
+ * in [run] are lost
  */
 class SingleThreadExecutorMarshaller : Marshaller {
     private val executor = Executors.newSingleThreadExecutor()

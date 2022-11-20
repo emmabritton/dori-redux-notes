@@ -5,11 +5,12 @@ plugins {
 
 android {
     namespace 'app.emmabritton.android_fsm'
-    compileSdk 33
+    compileSdk 32
 
     defaultConfig {
-        minSdk 30
-        targetSdk 33
+        minSdk 21
+        //noinspection OldTargetApi robolectric requires an old version
+        targetSdk 32
     }
 
     buildTypes {
@@ -25,8 +26,15 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
     implementation project(":fsm")
+    testImplementation "junit:junit:$junitVer"
+    testImplementation 'org.robolectric:robolectric:4.9'
 }

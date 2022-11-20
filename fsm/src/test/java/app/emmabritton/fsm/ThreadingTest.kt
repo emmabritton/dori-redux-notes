@@ -9,7 +9,7 @@ import java.util.concurrent.Executors
 
 class ThreadingTest {
     @Test
-    fun `check if multiple threads submitting actions breaks anything when executing immediately`() {
+    fun `GIVEN immediate runtime WHEN multiple threads submit actions THEN result is correct`() {
         data class State(val count: Int) : EmptyState()
         val Increment = object : Action {}
         val reduce = { _: Action, state: State ->
@@ -32,7 +32,7 @@ class ThreadingTest {
     }
 
     @Test
-    fun `check if multiple threads submitting actions breaks anything when executing single thread`() {
+    fun `GIVEN threaded runtime WHEN multiple threads submit actions THEN result is correct`() {
         data class State(val count: Int): EmptyState()
         val Increment = object : Action {}
         val reduce = { _: Action, state: State ->
