@@ -33,8 +33,4 @@ fun <S, U> createCustomRuntime(
     marshaller: Marshaller,
     commandHandler: CommandHandler,
     transformer: Transformer<S, U>
-) = object : RuntimeKernel<S, U>(marshaller, reduce, {}, commandHandler, transformer, initState) {
-    init {
-        commandHandler.actionReceiver = this
-    }
-}
+) = RuntimeKernel(marshaller, reduce, {}, commandHandler, transformer, initState)

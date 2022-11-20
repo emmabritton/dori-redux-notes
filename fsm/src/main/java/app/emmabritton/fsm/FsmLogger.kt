@@ -66,7 +66,7 @@ sealed class Source {
     }
 
     companion object {
-        fun from(command: app.emmabritton.fsm.Command) = Command(command.name())
+        fun from(command: app.emmabritton.fsm.Command) = Command(command.id())
         fun from(middleware: app.emmabritton.fsm.Middleware<*,*>) = Middleware(middleware::class.java.simpleName)
     }
 }

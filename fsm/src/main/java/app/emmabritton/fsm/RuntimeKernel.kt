@@ -7,30 +7,30 @@ import org.jetbrains.annotations.TestOnly
  * they are passed to the CommandHandler with executes generating more actions,
  * and so on..
  */
-open class RuntimeKernel<S, U>(
+class RuntimeKernel<S, U>(
     /**
      * Executes code on the main thread
      *
      * Primarily used so Android code doesn't alter the UI from a background thread
      */
-    protected val marshaller: Marshaller,
+    private val marshaller: Marshaller,
     /**
      * Converts state and an action into a new state with optional commands
      */
-    protected val reduce: (Action, S) -> Effect<S>,
+    private val reduce: (Action, S) -> Effect<S>,
     /**
      * Called after an action has been reduced with the new state
      */
-    protected val render: (U) -> Unit,
+    private val render: (U) -> Unit,
     /**
      * Handles where commands are executed
      * see [CommandHandler], [Command], [BaseCommand]
      */
-    protected val commandHandler: CommandHandler,
+    private val commandHandler: CommandHandler,
     /**
      * Converts state ([S]) into ui state ([U]) to be rendered
      */
-    protected val presentation: Transformer<S, U>,
+    private val presentation: Transformer<S, U>,
     /**
      * Initial state for the app
      */
@@ -42,10 +42,14 @@ open class RuntimeKernel<S, U>(
         @TestOnly
         set
 
-    protected val logger by lazy { FsmLogger.get(Source.Runtime) }
+    private val logger by lazy { FsmLogger.get(Source.Runtime) }
 
-    protected val stateChangeLock = Any()
-    protected val middlewares = mutableListOf<Middleware<S, U>>()
+    private val stateChangeLock = Any()
+    private val middlewares = mutableListOf<Middleware<S, U>>()
+
+    init {
+        commandHandler.actionReceiver = this
+    }
 
     override fun receive(action: Action) {
         synchronized(stateChangeLock) {

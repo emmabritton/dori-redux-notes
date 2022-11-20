@@ -8,7 +8,7 @@ open class Effect<S>(val newState: S, val commands: List<Command>) {
         return "State: ${newState.toString()}" + if (commands.isEmpty()) {
             " - No commands"
         } else {
-            " - Commands: " + commands.joinToString(",") { it.name() }
+            " - Commands: " + commands.joinToString(",") { it.id() }
         }
     }
 }

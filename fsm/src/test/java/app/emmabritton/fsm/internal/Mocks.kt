@@ -16,7 +16,7 @@ fun mockAction(): Action {
 
 fun mockCommand(): Command {
     val command = mockk<Command>()
-    every { command.name() } answers  { "mock-command" }
+    every { command.id() } answers  { "mock-command" }
     every { command.run(any()) } answers  { }
     return command
 }
