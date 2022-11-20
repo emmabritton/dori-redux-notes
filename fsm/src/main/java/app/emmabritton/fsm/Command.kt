@@ -25,9 +25,9 @@ interface Command {
     fun isCancelled(): Boolean
 
     /**
-     * Name of command, typically Class name and ID
+     * Unique name of command, typically Class name and ID
      */
-    fun name(): String
+    fun id(): String
 }
 
 /**
@@ -43,11 +43,11 @@ abstract class BaseCommand : Command {
 
     protected abstract fun internalRun(actionReceiver: ActionReceiver)
 
-    override fun name() = "${javaClass.simpleName}#$id"
+    override fun id() = "${javaClass.simpleName}#$id"
 
     override fun run(actionReceiver: ActionReceiver) {
         if (isCancelled()) {
-            logger.d("Ignoring run() for ${name()} as it's been cancelled")
+            logger.d("Ignoring run() for ${id()} as it's been cancelled")
         } else {
             internalRun(CancellableActionReceiver(actionReceiver))
         }
@@ -63,7 +63,7 @@ abstract class BaseCommand : Command {
         ActionReceiver {
         override fun receive(action: Action) {
             if (isCancelled()) {
-                logger.d("Ignoring ${action.describe()} for ${name()} as it's been cancelled")
+                logger.d("Ignoring ${action.describe()} for ${id()} as it's been cancelled")
             } else {
                 receiver.receive(action)
             }
