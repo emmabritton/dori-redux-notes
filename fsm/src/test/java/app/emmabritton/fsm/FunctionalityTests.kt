@@ -1,9 +1,6 @@
 package app.emmabritton.fsm
 
-import app.emmabritton.fsm.internal.createImmediateRuntime
-import app.emmabritton.fsm.internal.mockAction
-import app.emmabritton.fsm.internal.mockCommand
-import app.emmabritton.fsm.internal.mockReadOnlyMiddleware
+import app.emmabritton.fsm.internal.*
 import io.mockk.*
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
@@ -14,7 +11,7 @@ class FunctionalityTests {
     fun `GIVEN basic immediate runtime WHEN action is received THEN reducer is called`() {
         var reducerCalled = false
         val reducer = emptyReducer { reducerCalled = true }
-        val runtime = createImmediateRuntime(reducer, EmptyState)
+        val runtime = createImmediateRuntime(reducer, EmptyState())
 
         runtime.receive(mockAction())
 
@@ -24,8 +21,8 @@ class FunctionalityTests {
     @Test
     fun `GIVEN basic immediate runtime WHEN action with command is received THEN command is executed`() {
         val command = mockCommand()
-        val reducer: (Action, EmptyState) -> Effect<EmptyState> = {_,_ -> Effect(EmptyState, listOf(command))}
-        val runtime = createImmediateRuntime(reducer, EmptyState)
+        val reducer: (Action, EmptyState) -> Effect<EmptyForegroundState, EmptyState> = {_,_ -> Effect(EmptyState(), listOf(command))}
+        val runtime = createImmediateRuntime(reducer, EmptyState())
 
         runtime.receive(mockAction())
 
@@ -37,7 +34,7 @@ class FunctionalityTests {
         lateinit var actionReceived: Action
         val actionToBeSent = mockAction()
         val reducer = emptyReducer { actionReceived = it }
-        val runtime = createImmediateRuntime(reducer, EmptyState)
+        val runtime = createImmediateRuntime(reducer, EmptyState())
 
         runtime.receive(actionToBeSent)
 
@@ -48,8 +45,8 @@ class FunctionalityTests {
     fun `GIVEN basic immediate runtime WHEN action is received THEN middleware is called`() {
         val reducer = emptyReducer { }
         val actionToBeSent = mockAction()
-        val middleware = mockReadOnlyMiddleware<EmptyState>()
-        val runtime = createImmediateRuntime(reducer, EmptyState)
+        val middleware = mockReadOnlyMiddleware<EmptyForegroundState, EmptyState, FixedUiState>()
+        val runtime = createImmediateRuntime(reducer, EmptyState())
         runtime.addMiddleware(middleware)
 
         runtime.receive(actionToBeSent)
@@ -67,7 +64,7 @@ class FunctionalityTests {
         FsmLogger.debug = { log.append('\n'); log.append(it) }
 
         val reducer = emptyReducer { }
-        val runtime = createImmediateRuntime(reducer, EmptyState)
+        val runtime = createImmediateRuntime(reducer, EmptyState())
         val action = mockAction()
         runtime.receive(action)
 
@@ -77,8 +74,8 @@ class FunctionalityTests {
 [RT] Processed to ${action.describe()}
 [RT] Reduced to State: EmptyState - No commands
 [RT] Processed to State: EmptyState - No commands
-[RT] Transformed EmptyState to EmptyState
-[RT] Processed to EmptyState"""
+[RT] Transformed EmptyState to FixedUiState
+[RT] Processed to FixedUiState"""
         )
     }
 }

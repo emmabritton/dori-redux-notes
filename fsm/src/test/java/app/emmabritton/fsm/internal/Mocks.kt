@@ -1,9 +1,6 @@
 package app.emmabritton.fsm.internal
 
-import app.emmabritton.fsm.Action
-import app.emmabritton.fsm.Command
-import app.emmabritton.fsm.Effect
-import app.emmabritton.fsm.ReadOnlyMiddleware
+import app.emmabritton.fsm.*
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -16,16 +13,17 @@ fun mockAction(): Action {
 
 fun mockCommand(): Command {
     val command = mockk<Command>()
-    every { command.id() } answers  { "mock-command" }
-    every { command.run(any()) } answers  { }
+    every { command.id() } answers { "mock-command" }
+    every { command.run(any()) } answers { }
     return command
 }
 
-inline fun <reified S : Any> mockReadOnlyMiddleware(): ReadOnlyMiddleware<S, S> {
-    val middleware = mockk<ReadOnlyMiddleware<S,S>>()
+inline fun <reified F : ForegroundState, reified S : State<F>, reified U : UiState> mockReadOnlyMiddleware(): ReadOnlyMiddleware<F, S, U> {
+    val middleware = mockk<ReadOnlyMiddleware<F, S, U>>()
     val actionSlot = slot<Action>()
-    val effectSlot = slot<Effect<S>>()
-    val stateSlot = slot<S>()
+    val effectSlot = slot<Effect<F, S>>()
+    val stateSlot = slot<U>()
+    val commandSlot = slot<Command>()
 
     every { middleware.onActionReceived(capture(actionSlot)) } answers { actionSlot.captured }
 
@@ -43,6 +41,16 @@ inline fun <reified S : Any> mockReadOnlyMiddleware(): ReadOnlyMiddleware<S, S> 
             capture(stateSlot)
         )
     } answers { stateSlot.captured }
+
+    every {
+        middleware.onCommandCancelled(any(), any())
+    } answers { true }
+
+    every {
+        middleware.onCommandSubmitted(any(), capture(commandSlot))
+    } answers {
+        commandSlot.captured
+    }
 
     return middleware
 }

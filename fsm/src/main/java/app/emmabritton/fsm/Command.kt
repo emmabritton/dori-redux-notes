@@ -1,6 +1,6 @@
 package app.emmabritton.fsm
 
-import org.jetbrains.annotations.TestOnly
+typealias CommandId = String
 
 /**
  * Represents something that is going to happen, such as SubmitFoodSearch, Logout
@@ -27,7 +27,7 @@ interface Command {
     /**
      * Unique name of command, typically Class name and ID
      */
-    fun id(): String
+    fun id(): CommandId
 }
 
 /**

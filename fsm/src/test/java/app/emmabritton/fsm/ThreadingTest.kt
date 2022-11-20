@@ -10,7 +10,7 @@ import java.util.concurrent.Executors
 class ThreadingTest {
     @Test
     fun `check if multiple threads submitting actions breaks anything when executing immediately`() {
-        data class State(val count: Int)
+        data class State(val count: Int) : EmptyState()
         val Increment = object : Action {}
         val reduce = { _: Action, state: State ->
             Effect(state.copy(count = state.count + 1), emptyList())
@@ -33,7 +33,7 @@ class ThreadingTest {
 
     @Test
     fun `check if multiple threads submitting actions breaks anything when executing single thread`() {
-        data class State(val count: Int)
+        data class State(val count: Int): EmptyState()
         val Increment = object : Action {}
         val reduce = { _: Action, state: State ->
             Effect(state.copy(count = state.count + 1), emptyList())

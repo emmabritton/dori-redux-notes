@@ -21,14 +21,20 @@ interface CommandHandler {
  * Used for testing
  */
 class ImmediateCommandHandler : CommandHandler {
+    private val logger = FsmLogger.get(Source.from(this))
     override lateinit var actionReceiver: ActionReceiver
 
     override fun add(command: Command) {
-        command.run(actionReceiver)
+        try {
+            command.run(actionReceiver)
+        } catch (e: Exception) {
+            logger.e(e, "Command crashed: ${command.id()}")
+            actionReceiver.receive(CommandException(command.id(), e))
+        }
     }
 
     override fun cancel(commandId: String) {
-        throw NotImplementedError("ImmediateCommandHandler doesn't support cancelling")
+        //Does nothing
     }
 }
 
@@ -36,6 +42,7 @@ class ImmediateCommandHandler : CommandHandler {
  * Queues commands to be executed in a fixed thread pool
  */
 class FixedThreadPoolExecutorCommandHandler(count: Int = 1) : CommandHandler {
+    private val logger = FsmLogger.get(Source.from(this))
     private val executor = Executors.newFixedThreadPool(count)
     override lateinit var actionReceiver: ActionReceiver
     private val commandFutures = mutableListOf<CommandJob>()
@@ -43,7 +50,14 @@ class FixedThreadPoolExecutorCommandHandler(count: Int = 1) : CommandHandler {
     override fun add(command: Command) {
         synchronized(executor) {
             commandFutures.removeAll { it.future.isDone }
-            val future = executor.submit { command.run(actionReceiver) }
+            val future = executor.submit {
+                try {
+                    command.run(actionReceiver)
+                } catch (e: Exception) {
+                    logger.e(e, "Command crashed: ${command.id()}")
+                    actionReceiver.receive(CommandException(command.id(), e))
+                }
+            }
             commandFutures.add(CommandJob(future, command))
         }
     }

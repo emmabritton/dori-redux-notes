@@ -56,10 +56,12 @@ sealed class Source {
     object Runtime : Source()
     class Command(val name: String) : Source()
     class Middleware(val name: String) : Source()
+    class CommandHandler(val name: String) : Source()
 
     override fun toString(): String {
         return when (this) {
             is Command -> "CD-$name"
+            is CommandHandler -> "CH-$name"
             is Middleware -> "MW-$name"
             Runtime -> "RT"
         }
@@ -67,6 +69,7 @@ sealed class Source {
 
     companion object {
         fun from(command: app.emmabritton.fsm.Command) = Command(command.id())
-        fun from(middleware: app.emmabritton.fsm.Middleware<*,*>) = Middleware(middleware::class.java.simpleName)
+        fun from(middleware: app.emmabritton.fsm.Middleware<*,*,*>) = Middleware(middleware::class.java.simpleName)
+        fun from(handler: app.emmabritton.fsm.CommandHandler) = CommandHandler(handler::class.java.simpleName)
     }
 }

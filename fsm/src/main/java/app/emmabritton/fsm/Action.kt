@@ -10,8 +10,8 @@ interface Action {
     fun describe(): String = this.javaClass.simpleName
 }
 
-class CommandException(val name: String, val cause: Exception) : Action {
+class CommandException(val id: String, val cause: Exception) : Action {
     override fun describe(): String {
-        return "CommandException: $name: ${cause.javaClass.simpleName}"
+        return "CommandException: $id: ${cause.javaClass.simpleName}"
     }
 }

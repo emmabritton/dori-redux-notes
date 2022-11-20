@@ -1,5 +1,6 @@
 package app.emmabritton.fsm
 
+import app.emmabritton.fsm.internal.FixedUiState
 import app.emmabritton.fsm.internal.createImmediateRuntime
 import app.emmabritton.fsm.internal.mockAction
 import junit.framework.TestCase.assertEquals
@@ -12,13 +13,13 @@ class MiddlewareTests {
         lateinit var middlewareAction: Action
         val targetAction = mockAction()
         val reducer = emptyReducer { receivedAction = it }
-        val middleware = object: Middleware<EmptyState, EmptyState> {
+        val middleware = object: Middleware<EmptyForegroundState, EmptyState, FixedUiState> {
             override fun onActionReceived(action: Action): Action {
                 middlewareAction = action
                 return targetAction
             }
         }
-        val runtime = createImmediateRuntime(reducer, EmptyState)
+        val runtime = createImmediateRuntime(reducer, EmptyState())
         runtime.addMiddleware(middleware)
         val action = mockAction()
         runtime.receive(action)
