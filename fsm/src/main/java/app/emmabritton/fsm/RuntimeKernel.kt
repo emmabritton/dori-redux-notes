@@ -52,6 +52,8 @@ open class RuntimeKernel<F : FsmForegroundState, S : FsmState<F>, U : FsmUiState
     }
 
     override fun receive(action: Action) {
+        //catch exceptions in transform?
+        //if so, prevent loops
         synchronized(stateChangeLock) {
             marshaller.run {
                 val effect = reduceAction(action)
