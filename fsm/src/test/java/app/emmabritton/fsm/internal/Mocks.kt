@@ -18,7 +18,7 @@ fun mockCommand(): Command {
     return command
 }
 
-inline fun <reified F : ForegroundState, reified S : State<F>, reified U : UiState> mockReadOnlyMiddleware(): ReadOnlyMiddleware<F, S, U> {
+inline fun <reified F : FsmForegroundState, reified S : FsmState<F>, reified U : FsmUiState> mockReadOnlyMiddleware(): ReadOnlyMiddleware<F, S, U> {
     val middleware = mockk<ReadOnlyMiddleware<F, S, U>>()
     val actionSlot = slot<Action>()
     val effectSlot = slot<Effect<F, S>>()

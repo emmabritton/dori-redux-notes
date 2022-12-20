@@ -1,12 +1,12 @@
 package app.emmabritton.fsm
 
-interface State<F : ForegroundState> {
+interface FsmState<F : FsmForegroundState> {
     fun getForegroundState(): F
 }
 
-interface ForegroundState {
+interface FsmForegroundState {
     fun getForegroundCommands(): List<Command>
     fun getCommandIdsToCancelOnBackground(): List<CommandId>
 }
 
-interface UiState
+interface FsmUiState

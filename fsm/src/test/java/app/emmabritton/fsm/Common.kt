@@ -5,13 +5,13 @@ fun emptyReducer(method: (Action) -> Unit): (Action, EmptyState) -> Effect<Empty
     return { act, _ -> method(act); EmptyEffect }
 }
 
-class EmptyForegroundState : ForegroundState {
+class EmptyForegroundState : FsmForegroundState {
     override fun getForegroundCommands() = emptyList<Command>()
 
     override fun getCommandIdsToCancelOnBackground() = emptyList<CommandId>()
 }
 
-open class EmptyState: State<EmptyForegroundState> {
+open class EmptyState: FsmState<EmptyForegroundState> {
     override fun toString(): String = javaClass.simpleName
     override fun getForegroundState() = EmptyForegroundState()
 }

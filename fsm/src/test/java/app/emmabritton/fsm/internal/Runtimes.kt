@@ -2,16 +2,16 @@ package app.emmabritton.fsm.internal
 
 import app.emmabritton.fsm.*
 
-object FixedUiState : UiState {
+object FixedUiState : FsmUiState {
     override fun toString() = "FixedUiState"
 }
 
-private class FixedTransform<F : ForegroundState, S : State<F>> :
+private class FixedTransform<F : FsmForegroundState, S : FsmState<F>> :
     Transformer<F, S, FixedUiState> {
     override fun transform(state: S) = FixedUiState
 }
 
-fun <F : ForegroundState, S : State<F>> createImmediateRuntime(
+fun <F : FsmForegroundState, S : FsmState<F>> createImmediateRuntime(
     reduce: (Action, S) -> Effect<F, S>,
     initState: S
 ) = createCustomRuntime(
@@ -22,7 +22,7 @@ fun <F : ForegroundState, S : State<F>> createImmediateRuntime(
     FixedTransform()
 )
 
-fun <F : ForegroundState, S : State<F>> createThreadedRuntime(
+fun <F : FsmForegroundState, S : FsmState<F>> createThreadedRuntime(
     reduce: (Action, S) -> Effect<F, S>,
     initState: S
 ): Triple<RuntimeKernel<F, S, FixedUiState>, SingleThreadExecutorMarshaller, FixedThreadPoolExecutorCommandHandler> {
@@ -33,7 +33,7 @@ fun <F : ForegroundState, S : State<F>> createThreadedRuntime(
     return Triple(runtime, marshaller, handler)
 }
 
-fun <F : ForegroundState, S : State<F>, U : UiState> createCustomRuntime(
+fun <F : FsmForegroundState, S : FsmState<F>, U : FsmUiState> createCustomRuntime(
     reduce: (Action, S) -> Effect<F, S>,
     initState: S,
     marshaller: Marshaller,

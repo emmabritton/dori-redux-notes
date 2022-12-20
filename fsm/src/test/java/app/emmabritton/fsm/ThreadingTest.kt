@@ -10,12 +10,12 @@ import java.util.concurrent.Executors
 class ThreadingTest {
     @Test
     fun `GIVEN immediate runtime WHEN multiple threads submit actions THEN result is correct`() {
-        data class State(val count: Int) : EmptyState()
+        data class FsmState(val count: Int) : EmptyState()
         val Increment = object : Action {}
-        val reduce = { _: Action, state: State ->
+        val reduce = { _: Action, state: FsmState ->
             Effect(state.copy(count = state.count + 1), emptyList())
         }
-        val runtime = createImmediateRuntime(reduce, State(0))
+        val runtime = createImmediateRuntime(reduce, FsmState(0))
 
         val executor = Executors.newFixedThreadPool(50)
         for (i in 0..100) {
@@ -28,7 +28,7 @@ class ThreadingTest {
         }
         executor.shutdownAndWaitOrThrow("executor", 2)
 
-        assertEquals(runtime.state, State(202))
+        assertEquals(runtime.state, FsmState(202))
     }
 
     @Test

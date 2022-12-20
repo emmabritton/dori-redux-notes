@@ -3,7 +3,7 @@ package app.emmabritton.fsm
 /**
  * Used to view events in the [RuntimeKernel] and optionally transform them
  */
-interface Middleware<F : ForegroundState, S : State<F>, U : UiState> {
+interface Middleware<F : FsmForegroundState, S : FsmState<F>, U : FsmUiState> {
     /**
      * Called when an action is received by the runtime
      */
@@ -47,7 +47,7 @@ interface Middleware<F : ForegroundState, S : State<F>, U : UiState> {
 /**
  * Convenience class for [Middleware] that handles returning the original value
  */
-abstract class ReadOnlyMiddleware<F : ForegroundState, S : State<F>, U : UiState> :
+abstract class ReadOnlyMiddleware<F : FsmForegroundState, S : FsmState<F>, U : FsmUiState> :
     Middleware<F, S, U> {
     protected open fun internalOnActionReceived(action: Action) {}
     protected open fun internalOnActionProcessed(action: Action, state: S, effect: Effect<F, S>) {}

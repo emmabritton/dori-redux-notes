@@ -3,6 +3,6 @@ package app.emmabritton.fsm
 /**
  * Converts state into ui state
  */
-interface Transformer<F : ForegroundState, S : State<F>, U : UiState> {
+interface Transformer<F : FsmForegroundState, S : FsmState<F>, U : FsmUiState> {
     fun transform(state: S): U
 }

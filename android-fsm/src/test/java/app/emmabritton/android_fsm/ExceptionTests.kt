@@ -14,16 +14,16 @@ class ExceptionTests {
 
     @Test(expected = TestException::class)
     fun `GIVEN threaded runtime and reducer that will throw WHEN it throws THEN process crashes`() {
-        class TestFState : ForegroundState {
+        class TestFState : FsmForegroundState {
             override fun getForegroundCommands() = emptyList<Command>()
             override fun getCommandIdsToCancelOnBackground() = emptyList<CommandId>()
         }
 
-        class TestState : State<TestFState> {
+        class TestState : FsmState<TestFState> {
             override fun getForegroundState() = TestFState()
         }
 
-        class TestUState : UiState
+        class TestUState : FsmUiState
 
         val reduce = { _: Action, _: TestState -> throw TestException() }
         val marshaller = AndroidMainThreadMarshaller()
