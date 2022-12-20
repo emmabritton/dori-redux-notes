@@ -27,7 +27,7 @@ fun <F : FsmForegroundState, S : FsmState<F>> createThreadedRuntime(
     initState: S
 ): Triple<RuntimeKernel<F, S, FixedUiState>, SingleThreadExecutorMarshaller, FixedThreadPoolExecutorCommandHandler> {
     val marshaller = SingleThreadExecutorMarshaller()
-    val handler = FixedThreadPoolExecutorCommandHandler()
+    val handler = FixedThreadPoolExecutorCommandHandler(3)
     val runtime =
         createCustomRuntime(reduce, initState, marshaller, handler, FixedTransform())
     return Triple(runtime, marshaller, handler)

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.TestOnly
  * they are passed to the CommandHandler with executes generating more actions,
  * and so on..
  */
-class RuntimeKernel<F : FsmForegroundState, S : FsmState<F>, U : FsmUiState>(
+open class RuntimeKernel<F : FsmForegroundState, S : FsmState<F>, U : FsmUiState>(
     /**
      * Executes code on the main thread
      *
