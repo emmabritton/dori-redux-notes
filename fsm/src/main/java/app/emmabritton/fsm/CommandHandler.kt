@@ -12,7 +12,7 @@ interface CommandHandler {
 
     fun add(command: Command)
 
-    fun cancel(commandId: String)
+    fun cancel(commandId: CommandId)
     fun cancel(commandClass: Class<out Command>)
 }
 
@@ -34,7 +34,7 @@ class ImmediateCommandHandler : CommandHandler {
         }
     }
 
-    override fun cancel(commandId: String) {
+    override fun cancel(commandId: CommandId) {
         throw NotImplementedError("ImmediateCommandHandler doesn't support cancelling")
     }
 
@@ -72,7 +72,7 @@ class FixedThreadPoolExecutorCommandHandler(count: Int = 1) : CommandHandler {
         executor.shutdownAndWaitOrThrow("handler", seconds)
     }
 
-    override fun cancel(commandId: String) {
+    override fun cancel(commandId: CommandId) {
         cancel { it.command.id() == commandId }
     }
 
